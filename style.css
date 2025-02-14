@@ -1,0 +1,21 @@
+body {
+    background-image: url('src/bg1.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh; /* Ocupa toda la pantalla */
+    width: 100%;
+    overflow-x: hidden; /* Evita desplazamiento horizontal */
+}
+
+/* Mejora para móviles */
+@media (max-width: 768px) {
+    body {
+        background-size: contain; /* Evita cortes en pantallas pequeñas */
+    }
+}
+.btn-custom {
+    background-color: #00A3E0 !important;
+    border-color: #008ec3 !important; /* Color del borde */
+    color: white !important;
+}
