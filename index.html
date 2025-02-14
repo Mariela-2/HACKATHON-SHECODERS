@@ -23,14 +23,6 @@
                         <h4 class="text-center mb-2">SISTEMA DE VACACIONES</h4>
                         <h5 class="text-center mb-4 text-muted">Inicio de sesión</h5>
                         
-                        <div class="btn-group w-100 mb-4" role="group">
-                            <input type="radio" class="btn-check" name="userType" id="empleado" checked>
-                            <label class="btn btn-outline-primary" for="empleado">Empleado</label>
-                            
-                            <input type="radio" class="btn-check" name="userType" id="administrador">
-                            <label class="btn btn-outline-primary" for="administrador">Administrador</label>
-                        </div>
-
                         <form>
                             <div class="mb-3">
                                 <label for="email" class="form-label">Correo electrónico</label>
@@ -42,10 +34,6 @@
                                 <label for="password" class="form-label">Contraseña</label>
                                 <input type="password" class="form-control form-control-lg" id="password" 
                                     placeholder="Ingresa tu contraseña" required>
-                            </div>
-                            
-                            <div class="mb-4 text-center">
-                                <a href="#" class="text-decoration-none text-info">¿Olvidaste tu contraseña?</a>
                             </div>
                             
                             <button type="submit" class="btn btn-custom text-white w-100 mb-3 py-2 fs-5">INGRESAR</button>
@@ -67,46 +55,51 @@
                         <form>
                             <div class="row mb-3 gx-2 gx-sm-3">
                                 <div class="col-6">
-                                    <label for="nombre" class="form-label">Nombre</label>
-                                    <input type="text" class="form-control form-control-lg" id="nombre" 
+                                    <label for="nombre" class="form-label fs-6">Nombre</label>
+                                    <input type="text" class="form-control form-control-lg fs-6" id="nombre" 
                                         placeholder="Tu nombre" required>
                                 </div>
                                 <div class="col-6">
-                                    <label for="apellidos" class="form-label">Apellidos</label>
-                                    <input type="text" class="form-control form-control-lg" id="apellidos" 
+                                    <label for="apellidos" class="form-label ">Apellidos</label>
+                                    <input type="text" class="form-control form-control-lg fs-6" id="apellidos" 
                                         placeholder="Tus apellidos" required>
                                 </div>
                             </div>
 
                             <div class="row mb-3 gx-2 gx-sm-3">
                                 <div class="col-6">
-                                    <label for="puesto" class="form-label">Puesto</label>
-                                    <input type="text" class="form-control form-control-lg" id="puesto" 
-                                        placeholder="Tu puesto" required>
+                                    <label for="puesto" class="form-label fs-7">Puesto</label>
+                                    <select class="form-select" aria-label="Default select example">
+                                        <option selected>Seleccionar</option>
+                                        <option value="1">Empleado</option>
+                                        <option value="2">Administrador</option>
+                                    </select>
                                 </div>
                                 <div class="col-6">
-                                    <label for="codigo" class="form-label">Código</label>
-                                    <input type="text" class="form-control form-control-lg" id="codigo" 
+                                    <label for="codigo" class="form-label fs-7">Código</label>
+                                    <input type="text" class="form-control form-control-lg fs-6" id="codigo" 
                                         placeholder="Tu código" required>
                                 </div>
                             </div>
 
+                            
                             <div class="mb-3">
-                                <label for="emailReg" class="form-label">Correo electrónico</label>
-                                <input type="email" class="form-control form-control-lg" id="emailReg" 
+                                <label for="emailReg" class="form-label fs-6">Correo electrónico</label>
+                                <input type="email" class="form-control form-control-lg fs-6" id="emailReg" 
                                     placeholder="correo@ejemplo.com" required>
                             </div>
 
-                            <div class="mb-3">
-                                <label for="passwordReg" class="form-label">Crea una contraseña</label>
-                                <input type="password" class="form-control form-control-lg" id="passwordReg" 
-                                    placeholder="Ingresa tu contraseña" required>
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="confirm-password" class="form-label">Confirma tu contraseña</label>
-                                <input type="password" class="form-control form-control-lg" id="confirm-password" 
-                                    placeholder="Confirma tu contraseña" required>
+                            <div class="row mb-3 gx-2 gx-sm-3">
+                                <div class="col-6">
+                                    <label for="passwordReg" class="form-label fs-6">Crea una contraseña</label>
+                                    <input type="password" class="form-control form-control-lg fs-6" id="passwordReg" 
+                                        placeholder="Ingresa tu contraseña" required>
+                                </div>
+                                <div class="col-6">
+                                    <label for="confirm-password" class="form-label fs-6">Confirma tu contraseña</label>
+                                    <input type="password" class="form-control form-control-lg fs-6" id="confirm-password" 
+                                        placeholder="Confirma tu contraseña" required>
+                                </div>
                             </div>
 
                             <button type="submit" class="btn btn-custom text-white w-100 mb-3 py-2 fs-5">REGISTRARME</button>
@@ -114,7 +107,7 @@
                             <div class="text-center">
                                 <p class="mb-2">O</p>
                                 <button type="button" class="btn btn-outline-secondary btn-lg w-100 mb-3">
-                                    <img src="/api/placeholder/24/24" alt="Google logo" class="me-2">
+                                <img src="src/google.png" alt="Google logo" class="me-2 img-fluid" style="width: 20px; height: 20px;">
                                     Continuar con Google
                                 </button>
                             </div>
