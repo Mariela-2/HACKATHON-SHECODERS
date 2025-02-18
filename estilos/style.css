@@ -1,5 +1,5 @@
 body {
-    background-image: url('src/bg1.jpg');
+    background-image: url('https://i.postimg.cc/15v9K6Sx/bg1.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -19,3 +19,4 @@ body {
     border-color: #008ec3 !important; /* Color del borde */
     color: white !important;
 }
+
