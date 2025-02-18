@@ -63,7 +63,7 @@ function checkUserRole(uid) {
                 if (userData.role === 'admin') {
                     window.location.href = 'admin.html'; // Redirigir a la página de admin
                 } else {
-                    window.location.href = 'user.html'; // Redirigir a la página de usuario
+                    window.location.href = 'empleado.html'; // Redirigir a la página de usuario
                 }
             } else {
                 alert("No se encontró el rol del usuario.");
@@ -74,16 +74,6 @@ function checkUserRole(uid) {
         });
 }
 
-// Función de logout
-window.logout = function () {
-    alert("Cerrando sesión...");
-    signOut(auth).then(() => {
-        alert("Sesión cerrada, redirigiendo...");
-        window.location.href = 'index.html'; // Redirigir al login
-    }).catch((error) => {
-        alert("Error al cerrar sesión: " + error.message);
-    });
-};
 
 
 // Verificar el estado de autenticación
@@ -92,3 +82,5 @@ onAuthStateChanged(auth, (user) => {
         checkUserRole(user.uid); // Redirigir según el rol
     }
 });
+
+
