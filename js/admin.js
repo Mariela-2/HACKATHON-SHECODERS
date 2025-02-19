@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-import { getFirestore, collection, doc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+import { getFirestore, collection, doc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 import firebaseConfig from "./firebase-config.js";
 
 // Inicializar Firebase
@@ -17,14 +17,41 @@ window.logout = function () {
     });
 };
 
-// Verificar si el usuario está autenticado solo una vez
+// Verificar si el usuario está autenticado
 onAuthStateChanged(auth, async (user) => {
     if (!user) {
         window.location.href = 'auth.html';
     } else {
-        escucharSolicitudes(); // Se ejecuta una vez al iniciar sesión
+        console.log("Usuario autenticado:", user.uid);
+        await mostrarNombreEnTarjeta(user.uid);
+        escucharSolicitudes();
     }
 });
+
+// Función para mostrar el nombre del usuario en la tarjeta
+async function mostrarNombreEnTarjeta(userId) {
+    try {
+        const userRef = doc(db, "users", userId);
+        const userSnap = await getDoc(userRef);
+
+        if (userSnap.exists()) {
+            console.log("Datos del usuario:", userSnap.data()); // Depuración
+            const userData = userSnap.data();
+            const nombreCompleto = `${userData.nombre} ${userData.apellidos}`;
+            const nombreUsuarioElem = document.getElementById("nombreUsuario");
+
+            if (nombreUsuarioElem) {
+                nombreUsuarioElem.textContent = nombreCompleto;
+            } else {
+                console.error("Elemento #nombreUsuario no encontrado en el HTML");
+            }
+        } else {
+            console.log("No se encontró el usuario en Firestore");
+        }
+    } catch (error) {
+        console.error("Error al obtener los datos del usuario:", error);
+    }
+}
 
 // Escuchar cambios en Firestore en tiempo real
 function escucharSolicitudes() {
@@ -48,32 +75,33 @@ function escucharSolicitudes() {
 
             const fila = document.createElement("tr");
             fila.setAttribute("data-id", data.id);
-            
-            // Formatear la fecha de creación con hora
-            const createdDateFormatted = createdDate ? 
-                createdDate.toLocaleString('es-ES', {
+
+            const createdDateFormatted = createdDate
+                ? createdDate.toLocaleString('es-ES', {
                     day: '2-digit',
                     month: '2-digit',
                     year: 'numeric',
                     hour: '2-digit',
                     minute: '2-digit',
                     hour12: true
-                }).replace(/(\d+)\/(\d+)\/(\d+)/, '$3/$1/$2') : 'No disponible';
+                }).replace(/(\d+)\/(\d+)\/(\d+)/, '$3/$1/$2')
+                : 'No disponible';
 
-            // Formatear fechas de inicio y fin
-            const startDateFormatted = startDate ? 
-                startDate.toLocaleDateString('es-ES', {
+            const startDateFormatted = startDate
+                ? startDate.toLocaleDateString('es-ES', {
                     day: '2-digit',
                     month: '2-digit',
                     year: 'numeric'
-                }) : 'No disponible';
+                })
+                : 'No disponible';
 
-            const endDateFormatted = endDate ? 
-                endDate.toLocaleDateString('es-ES', {
+            const endDateFormatted = endDate
+                ? endDate.toLocaleDateString('es-ES', {
                     day: '2-digit',
                     month: '2-digit',
                     year: 'numeric'
-                }) : 'No disponible';
+                })
+                : 'No disponible';
 
             fila.innerHTML = `
                 <td>${createdDateFormatted}</td>
@@ -99,7 +127,7 @@ function escucharSolicitudes() {
     });
 }
 
-// Delegación de eventos para evitar duplicaciones
+// Delegación de eventos para actualizar el estado de una solicitud
 document.addEventListener("click", async (event) => {
     if (event.target.classList.contains("enviar-btn")) {
         const id = event.target.dataset.id;
@@ -109,7 +137,7 @@ document.addEventListener("click", async (event) => {
         try {
             await updateDoc(doc(db, "vacationRequests", id), { 
                 status: nuevoEstado,
-                updatedAt: new Date() // Agregar fecha de actualización
+                updatedAt: new Date()
             });
 
             alert(`Estado de la solicitud actualizado a: ${nuevoEstado}`);
