@@ -3,12 +3,12 @@ import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/fi
 import { getFirestore, collection, addDoc, serverTimestamp, Timestamp, doc, getDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 import firebaseConfig from "./firebase-config.js";
 
-// Inicializa Firebase
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
 const db = getFirestore();
 
-// Definir logout en el objeto window para hacerlo global
+// Global logout function
 window.logout = function () {
     signOut(auth).then(() => {
         window.location.href = 'auth.html';
@@ -17,14 +17,21 @@ window.logout = function () {
     });
 };
 
-// Verificar si el usuario está autenticado
-onAuthStateChanged(auth, async (user) => {
+// Initialize user interface
+const initializeUserInterface = async (user) => {
     if (!user) {
         window.location.href = 'auth.html';
-    } else {
-        await cargarHistorialSolicitudes(user.uid);
+        return;
     }
-});
+    
+    await Promise.all([
+        cargarHistorialSolicitudes(user.uid),
+        mostrarNombreEnTarjeta(user.uid)
+    ]);
+};
+
+// Single auth state listener
+onAuthStateChanged(auth, initializeUserInterface);
 
 document.addEventListener('DOMContentLoaded', () => {
     const vacationForm = document.getElementById('vacation-form');
@@ -48,112 +55,116 @@ document.addEventListener('DOMContentLoaded', () => {
             endDateInput.value = startDateInput.value;
         }
     });
-
-    const calcularDiasHabiles = (inicio, fin) => {
-        let dias = 0;
-        let actual = new Date(inicio);
-        const finFecha = new Date(fin);
-
-        while (actual <= finFecha) {
-            const diaSemana = actual.getDay();
-            if (diaSemana !== 0 && diaSemana !== 6) {
-                dias++;
-            }
-            actual.setDate(actual.getDate() + 1);
-        }
-        return dias;
-    };
-
-    const saveVacationRequest = async (startDate, endDate, diasHabiles) => {
-        try {
-            const user = auth.currentUser;
-
-            if (!user) {
-                throw new Error('Debes iniciar sesión para solicitar vacaciones');
-            }
-
-            // **Obtener nombre y apellido desde Firestore**
-            const userRef = doc(db, "users", user.uid);
-            const userSnap = await getDoc(userRef);
-
-            if (!userSnap.exists()) {
-                throw new Error('No se encontraron datos del usuario en Firestore.');
-            }
-
-            const userData = userSnap.data();
-            const nombre = userData.nombre || "No especificado";
-            const apellidos = userData.apellidos || "No especificado";
-
-            const vacationRequest = {
-                userId: user.uid,
-                userEmail: user.email,
-                nombre: nombre,
-                apellidos: apellidos,
-                startDate: Timestamp.fromDate(new Date(startDate)),
-                endDate: Timestamp.fromDate(new Date(endDate)),
-                diasHabiles: diasHabiles,
-                status: 'Pendiente',
-                createdAt: serverTimestamp(),
-                updatedAt: serverTimestamp()
-            };
-
-            const docRef = await addDoc(collection(db, 'vacationRequests'), vacationRequest);
-
-            return {
-                success: true,
-                requestId: docRef.id,
-                message: 'Solicitud de vacaciones enviada exitosamente'
-            };
-        } catch (error) {
-            console.error('Error al guardar la solicitud:', error);
-            return {
-                success: false,
-                error: error.message,
-                message: 'Error al enviar la solicitud de vacaciones'
-            };
-        }
-    };
-
-    vacationForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        submitButton.disabled = true;
-        submitButton.innerHTML = 'Procesando...';
-
-        try {
-            const startDate = startDateInput.value;
-            const endDate = endDateInput.value;
-
-            if (!startDate || !endDate) {
-                throw new Error('Por favor selecciona ambas fechas');
-            }
-
-            const fechaInicio = new Date(startDate);
-            const fechaFin = new Date(endDate);
-
-            if (fechaFin < fechaInicio) {
-                throw new Error('La fecha de finalización debe ser posterior a la fecha de inicio');
-            }
-
-            const diasHabiles = calcularDiasHabiles(fechaInicio, fechaFin);
-
-            const result = await saveVacationRequest(startDate, endDate, diasHabiles);
-
-            if (result.success) {
-                alert(result.message);
-                vacationForm.reset();
-                await cargarHistorialSolicitudes(auth.currentUser.uid); // Recargar historial
-            } else {
-                throw new Error(result.message);
-            }
-        } catch (error) {
-            alert(error.message);
-        } finally {
-            submitButton.disabled = false;
-            submitButton.innerHTML = 'Solicitar';
-        }
-    });
 });
+
+const calcularDiasHabiles = (inicio, fin) => {
+    let dias = 0;
+    let actual = new Date(inicio);
+    const finFecha = new Date(fin);
+
+    while (actual <= finFecha) {
+        const diaSemana = actual.getDay();
+        if (diaSemana !== 0 && diaSemana !== 6) {
+            dias++;
+        }
+        actual.setDate(actual.getDate() + 1);
+    }
+    return dias;
+};
+
+const saveVacationRequest = async (startDate, endDate, diasHabiles) => {
+    try {
+        const user = auth.currentUser;
+
+        if (!user) {
+            throw new Error('Debes iniciar sesión para solicitar vacaciones');
+        }
+
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (!userSnap.exists()) {
+            throw new Error('No se encontraron datos del usuario en Firestore.');
+        }
+
+        const userData = userSnap.data();
+        const nombre = userData.nombre || "No especificado";
+        const apellidos = userData.apellidos || "No especificado";
+
+        const vacationRequest = {
+            userId: user.uid,
+            userEmail: user.email,
+            nombre: nombre,
+            apellidos: apellidos,
+            startDate: Timestamp.fromDate(new Date(startDate)),
+            endDate: Timestamp.fromDate(new Date(endDate)),
+            diasHabiles: diasHabiles,
+            status: 'Pendiente',
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+        };
+
+        const docRef = await addDoc(collection(db, 'vacationRequests'), vacationRequest);
+
+        return {
+            success: true,
+            requestId: docRef.id,
+            message: 'Solicitud de vacaciones enviada exitosamente'
+        };
+    } catch (error) {
+        console.error('Error al guardar la solicitud:', error);
+        return {
+            success: false,
+            error: error.message,
+            message: 'Error al enviar la solicitud de vacaciones'
+        };
+    }
+};
+
+// Form submission handler
+const handleVacationFormSubmit = async (e) => {
+    e.preventDefault();
+    const submitButton = document.getElementById('submit-button');
+    const startDateInput = document.getElementById('start-date');
+    const endDateInput = document.getElementById('end-date');
+
+    submitButton.disabled = true;
+    submitButton.innerHTML = 'Procesando...';
+
+    try {
+        const startDate = startDateInput.value;
+        const endDate = endDateInput.value;
+
+        if (!startDate || !endDate) {
+            throw new Error('Por favor selecciona ambas fechas');
+        }
+
+        const fechaInicio = new Date(startDate);
+        const fechaFin = new Date(endDate);
+
+        if (fechaFin < fechaInicio) {
+            throw new Error('La fecha de finalización debe ser posterior a la fecha de inicio');
+        }
+
+        const diasHabiles = calcularDiasHabiles(fechaInicio, fechaFin);
+        const result = await saveVacationRequest(startDate, endDate, diasHabiles);
+
+        if (result.success) {
+            alert(result.message);
+            e.target.reset();
+            await cargarHistorialSolicitudes(auth.currentUser.uid);
+        } else {
+            throw new Error(result.message);
+        }
+    } catch (error) {
+        alert(error.message);
+    } finally {
+        submitButton.disabled = false;
+        submitButton.innerHTML = 'Solicitar';
+    }
+};
+
+document.getElementById('vacation-form')?.addEventListener('submit', handleVacationFormSubmit);
 
 async function cargarHistorialSolicitudes(userId) {
     try {
@@ -164,7 +175,7 @@ async function cargarHistorialSolicitudes(userId) {
             return;
         }
 
-        historialTable.innerHTML = ''; // Limpiar tabla antes de cargar datos
+        historialTable.innerHTML = '';
 
         const q = query(collection(db, 'vacationRequests'), where("userId", "==", userId));
         const querySnapshot = await getDocs(q);
@@ -174,24 +185,30 @@ async function cargarHistorialSolicitudes(userId) {
             return;
         }
 
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            const row = document.createElement('tr');
+        const solicitudes = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
 
-            // Definir clase Bootstrap según el estado
+        // Ordenar por fecha de creación (más reciente primero)
+        solicitudes.sort((a, b) => b.createdAt?.toMillis() - a.createdAt?.toMillis());
+
+        solicitudes.forEach(data => {
+            const row = document.createElement('tr');
+            
             let statusClass;
             switch (data.status.toLowerCase()) {
                 case 'aprobado':
-                    statusClass = 'text-success'; // Verde
+                    statusClass = 'text-success';
                     break;
                 case 'pendiente':
-                    statusClass = 'text-warning'; // Amarillo
+                    statusClass = 'text-warning';
                     break;
                 case 'rechazado':
-                    statusClass = 'text-danger'; // Rojo
+                    statusClass = 'text-danger';
                     break;
                 default:
-                    statusClass = 'text-secondary'; // Gris (Para estados desconocidos)
+                    statusClass = 'text-secondary';
             }
 
             row.innerHTML = `
@@ -217,8 +234,6 @@ async function mostrarNombreEnTarjeta(userId) {
         if (userSnap.exists()) {
             const userData = userSnap.data();
             const nombreCompleto = `${userData.nombre} ${userData.apellidos}`;
-
-            // Insertar nombre en la tarjeta
             document.getElementById("nombreUsuario").textContent = nombreCompleto;
         } else {
             console.log("No se encontró el usuario en Firestore");
@@ -227,14 +242,3 @@ async function mostrarNombreEnTarjeta(userId) {
         console.error("Error al obtener los datos del usuario:", error);
     }
 }
-
-// Verificar autenticación del usuario y llamar a las funciones necesarias
-onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-        window.location.href = 'auth.html';
-    } else {
-        await cargarHistorialSolicitudes(user.uid);
-        await mostrarNombreEnTarjeta(user.uid); // Ahora sí está correctamente llamada
-    }
-});
-
