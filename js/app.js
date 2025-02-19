@@ -165,3 +165,5 @@ onAuthStateChanged(auth, (user) => {
 
 // Exportar la función de logout para usarla en otras páginas
 export { logout };
+
+
