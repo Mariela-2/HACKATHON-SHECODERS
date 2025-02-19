@@ -123,9 +123,9 @@ function checkUserRole(uid) {
                 
                 // Redirigir según el rol
                 if (userData.role === 'admin') {
-                    window.location.href = 'admin.html';
+                    window.location.href = 'dashboard-admin.html';
                 } else {
-                    window.location.href = 'empleado.html';
+                    window.location.href = 'dashboard-user.html';
                 }
             } else {
                 alert("No se encontró la información del usuario.");
@@ -142,7 +142,7 @@ function logout() {
         // Limpiar sessionStorage
         sessionStorage.clear();
         // Redirigir a la página de login
-        window.location.href = 'index.html';
+        window.location.href = 'auth.html';
     }).catch((error) => {
         alert("Error al cerrar sesión: " + error.message);
     });
@@ -152,13 +152,13 @@ function logout() {
 onAuthStateChanged(auth, (user) => {
     if (user) {
         // Si estamos en la página de login y hay un usuario autenticado, verificar su rol
-        if (window.location.pathname.includes('index.html')) {
+        if (window.location.pathname.includes('auth.html')) {
             checkUserRole(user.uid);
         }
     } else {
         // Si no hay usuario autenticado y no estamos en la página de login, redirigir
-        if (!window.location.pathname.includes('index.html')) {
-            window.location.href = 'index.html';
+        if (!window.location.pathname.includes('auth.html')) {
+            window.location.href = 'auth.html';
         }
     }
 });

@@ -11,7 +11,7 @@ const db = getFirestore();
 // Definir logout en el objeto window para hacerlo global
 window.logout = function () {
     signOut(auth).then(() => {
-        window.location.href = 'index.html';
+        window.location.href = 'auth.html';
     }).catch((error) => {
         alert("Error al cerrar sesión: " + error.message);
     });
@@ -20,7 +20,7 @@ window.logout = function () {
 // Verificar si el usuario está autenticado
 onAuthStateChanged(auth, async (user) => {
     if (!user) {
-        window.location.href = 'index.html';
+        window.location.href = 'auth.html';
     } else {
         await cargarHistorialSolicitudes(user.uid);
     }
@@ -231,7 +231,7 @@ async function mostrarNombreEnTarjeta(userId) {
 // Verificar autenticación del usuario y llamar a las funciones necesarias
 onAuthStateChanged(auth, async (user) => {
     if (!user) {
-        window.location.href = 'index.html';
+        window.location.href = 'auth.html';
     } else {
         await cargarHistorialSolicitudes(user.uid);
         await mostrarNombreEnTarjeta(user.uid); // Ahora sí está correctamente llamada
