@@ -109,7 +109,7 @@ function escucharSolicitudes() {
                 <td>${startDateFormatted}</td>
                 <td>${endDateFormatted}</td>
                 <td>${data.diasHabiles}</td>
-                <td>${data.diasDisponibles || 'No definido'}</td>
+                <td>${data.diasDisponibles || '0'}</td>
                 <td>
                     <select class="form-select estatus-select" data-id="${data.id}">
                         <option value="pendiente" ${data.status === "pendiente" ? "selected" : ""}>Pendiente</option>
@@ -127,7 +127,6 @@ function escucharSolicitudes() {
     });
 }
 
-// Delegación de eventos para actualizar el estado de una solicitud
 document.addEventListener("click", async (event) => {
     if (event.target.classList.contains("enviar-btn")) {
         const id = event.target.dataset.id;
@@ -135,12 +134,46 @@ document.addEventListener("click", async (event) => {
         const nuevoEstado = fila.querySelector(".estatus-select").value;
 
         try {
-            await updateDoc(doc(db, "vacationRequests", id), { 
+            // Obtener la solicitud de Firestore
+            const solicitudRef = doc(db, "vacationRequests", id);
+            const solicitudSnap = await getDoc(solicitudRef);
+
+            if (!solicitudSnap.exists()) {
+                alert("La solicitud no existe.");
+                return;
+            }
+
+            const solicitudData = solicitudSnap.data();
+            const userId = solicitudData.userId;
+            const diasHabiles = solicitudData.diasHabiles;
+
+            // Actualizar el estado de la solicitud
+            await updateDoc(solicitudRef, { 
                 status: nuevoEstado,
                 updatedAt: new Date()
             });
 
-            alert(`Estado de la solicitud actualizado a: ${nuevoEstado}`);
+            // Si la solicitud es aprobada, restar días disponibles del usuario
+            if (nuevoEstado === "aprobado") {
+                const userRef = doc(db, "users", userId);
+                const userSnap = await getDoc(userRef);
+
+                if (userSnap.exists()) {
+                    const userData = userSnap.data();
+                    const diasDisponiblesActuales = userData.diasDisponibles ?? 0;
+                    const nuevosDiasDisponibles = Math.max(0, diasDisponiblesActuales - diasHabiles); // Evitar valores negativos
+
+                    // Actualizar los días disponibles del usuario
+                    await updateDoc(userRef, { diasDisponibles: nuevosDiasDisponibles });
+
+                    alert(`Estado actualizado a "Aprobado". Ahora el usuario tiene ${nuevosDiasDisponibles} días disponibles.`);
+                } else {
+                    alert("No se encontró el usuario en la base de datos.");
+                }
+            } else {
+                alert(`Estado de la solicitud actualizado a: ${nuevoEstado}`);
+            }
+
         } catch (error) {
             console.error("Error al actualizar el estado:", error);
             alert("Error al actualizar el estado. Inténtalo nuevamente.");

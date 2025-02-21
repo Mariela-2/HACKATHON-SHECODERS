@@ -3,6 +3,7 @@ import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/fi
 import { getFirestore, collection, addDoc, serverTimestamp, Timestamp, doc, getDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 import firebaseConfig from "./firebase-config.js";
 
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
@@ -87,7 +88,9 @@ const saveVacationRequest = async (startDate, endDate, diasHabiles) => {
             throw new Error('No se encontraron datos del usuario en Firestore.');
         }
 
+
         const userData = userSnap.data();
+        const diasDisponibles = userData.diasDisponibles ?? 0;
         const nombre = userData.nombre || "No especificado";
         const apellidos = userData.apellidos || "No especificado";
 
@@ -96,10 +99,11 @@ const saveVacationRequest = async (startDate, endDate, diasHabiles) => {
             userEmail: user.email,
             nombre: nombre,
             apellidos: apellidos,
+            diasDisponibles: diasDisponibles,
             startDate: Timestamp.fromDate(new Date(startDate)),
             endDate: Timestamp.fromDate(new Date(endDate)),
             diasHabiles: diasHabiles,
-            status: 'Pendiente',
+            status: 'PENDIENTE',
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp()
         };
@@ -121,7 +125,6 @@ const saveVacationRequest = async (startDate, endDate, diasHabiles) => {
     }
 };
 
-// Form submission handler
 const handleVacationFormSubmit = async (e) => {
     e.preventDefault();
     const submitButton = document.getElementById('submit-button');
@@ -147,6 +150,29 @@ const handleVacationFormSubmit = async (e) => {
         }
 
         const diasHabiles = calcularDiasHabiles(fechaInicio, fechaFin);
+
+        // Obtener los días disponibles del usuario desde Firestore
+        const user = auth.currentUser;
+        if (!user) {
+            throw new Error('Debes iniciar sesión para solicitar vacaciones');
+        }
+
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (!userSnap.exists()) {
+            throw new Error('No se encontraron datos del usuario en Firestore.');
+        }
+
+        const userData = userSnap.data();
+        const diasDisponibles = userData.diasDisponibles ?? 0;
+
+        // Validar si los días solicitados superan los disponibles
+        if (diasHabiles > diasDisponibles) {
+            throw new Error(`No puedes solicitar más de ${diasDisponibles} días.`);
+        }
+
+        // Guardar la solicitud si pasa la validación
         const result = await saveVacationRequest(startDate, endDate, diasHabiles);
 
         if (result.success) {
@@ -163,6 +189,9 @@ const handleVacationFormSubmit = async (e) => {
         submitButton.innerHTML = 'Solicitar';
     }
 };
+
+
+
 
 document.getElementById('vacation-form')?.addEventListener('submit', handleVacationFormSubmit);
 
@@ -235,6 +264,13 @@ async function mostrarNombreEnTarjeta(userId) {
             const userData = userSnap.data();
             const nombreCompleto = `${userData.nombre} ${userData.apellidos}`;
             document.getElementById("nombreUsuario").textContent = nombreCompleto;
+
+            // Mostrar días disponibles en el h2
+            if (userData.diasDisponibles !== undefined) {
+                document.getElementById("diasDisponibles").textContent = userData.diasDisponibles;
+            } else {
+                document.getElementById("diasDisponibles").textContent = "No disponible";
+            }
         } else {
             console.log("No se encontró el usuario en Firestore");
         }

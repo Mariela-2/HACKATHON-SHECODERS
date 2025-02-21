@@ -70,6 +70,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
             email: email,
             nombre: nombre,
             apellidos: apellidos,
+            diasDisponibles: 20,
             role: role,
             codigo: codigo,
             fechaRegistro: new Date().toISOString(),
@@ -165,5 +166,3 @@ onAuthStateChanged(auth, (user) => {
 
 // Exportar la función de logout para usarla en otras páginas
 export { logout };
-
-
