@@ -231,13 +231,13 @@ async function cargarHistorialSolicitudes(userId) {
                     statusClass = 'text-success fs-6';
                     break;
                 case 'pendiente':
-                    statusClass = 'text-warning';
+                    statusClass = 'text-warning fs-6';
                     break;
                 case 'rechazado':
-                    statusClass = 'text-danger';
+                    statusClass = 'text-danger fs-6';
                     break;
                 default:
-                    statusClass = 'text-secondary';
+                    statusClass = 'text-secondary fs-6';
             }
 
             row.innerHTML = `
