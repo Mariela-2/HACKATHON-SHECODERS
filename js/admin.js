@@ -212,7 +212,7 @@ function escucharHistorial() {
 
             // Clases de Bootstrap para los colores
             const statusText = data.status.trim().toLowerCase();
-            const statusClass = statusText === "aprobado" ? "badge text-success" : "badge text-danger";
+            const statusClass = statusText === "aprobado" ? "badge bg-success fs-6 text-white" : "badge bg-danger fs-6 text-white ";
 
 
             fila.innerHTML = `

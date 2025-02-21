@@ -228,16 +228,16 @@ async function cargarHistorialSolicitudes(userId) {
             let statusClass=data.status.trim().toLowerCase();
             switch (data.status.toLowerCase()) {
                 case 'aprobado':
-                    statusClass = 'text-success fs-6';
+                    statusClass = 'bg-success fs-6 text-white';
                     break;
                 case 'pendiente':
-                    statusClass = 'text-warning fs-6';
+                    statusClass = 'bg-warning fs-6 text-black';
                     break;
                 case 'rechazado':
-                    statusClass = 'text-danger fs-6';
+                    statusClass = 'bg-danger fs-6 text-white';
                     break;
                 default:
-                    statusClass = 'text-secondary fs-6';
+                    statusClass = 'bg-secondary fs-6 text-black';
             }
 
             row.innerHTML = `
