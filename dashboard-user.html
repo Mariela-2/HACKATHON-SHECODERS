@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal de Usuario</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <script src="https://kit.fontawesome.com/YOUR_KIT_CODE.js" crossorigin="anonymous"></script>
+
+
     <link rel="stylesheet" href="estilos/footer.css">
     <link rel="stylesheet" href="estilos/header.css">
 </head>
@@ -33,8 +37,8 @@
             <div class="col-md-4"> 
                 <div class="card text-center p-3 shadow-sm">
                     <div class="card-body">
-                        <div class="rounded-circle bg-primary mx-auto d-block" style="width: 80px; height: 80px;"></div>
-                        <h6 id="nombreUsuario" class="mt-3">Cargando...</h6>
+                        <img  style="width: 100px; height: 100px;"  src="src/icon.png" alt="">
+                        <h6 id="nombreUsuario" class="mt-3 fs-5">Cargando...</h6>
                         <h2 id="diasDisponibles" class="fw-bold"></h2>
                         <p>Días disponibles</p>
                     </div>
@@ -44,7 +48,7 @@
     
             <div class="col-md-8">
                 <div id="formulario-vacaciones" class="card p-4 shadow-sm">
-                    <h5 class="mb-3">FORMULARIO DE SOLICITUD DE VACACIÓN</h5>
+                    <h5 class="mb-3">SOLICITUD DE VACACIONES</h5>
                     <form id="vacation-form">
                         <h7 class="mb-3">Fecha de inicio</h7>
                         <input type="date" id="start-date" class="form-control mb-2" placeholder="Fecha de inicio" required>
@@ -60,10 +64,11 @@
                     <h5 class="mb-3 text-center ">📋 Historial de Solicitudes</h5>
                     <div class="table-responsive">
                         <table class="table table-hover table-bordered text-center bg-primary align-middle">
-                            <thead>
+                            <thead class="table-primary">
                                 <tr>
+                                    <th>Fecha Creación</th>
                                     <th>Fecha Inicio</th>
-                                    <th>Fecha Fin</th>
+                                    <th>Fecha Finalización</th>
                                     <th>Días Hábiles</th>
                                     <th>Estado</th>
                                 </tr>
@@ -88,19 +93,23 @@
                     <h5>Sistema de Vacaciones</h5>
                     <p class="mb-0">Gestiona tus días libres de manera eficiente</p>
                 </div>
-                <div class="col-md-4 mb-3">
-                    <h5>Enlaces Rápidos</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#">Inicio</a></li>
-                        <li><a href="#formulario-vacaciones">Solicitar Vacaciones</a></li>
-                        <li><a href="#">Mi Historial</a></li>
-                    </ul>
+                <div class="col-md-4 mb-3 text-center">
+                    <h5>Nuestras redes sociales</h5>
+                    <a href="https://www.facebook.com/DinersClubPeru/" target="_blank" class="text-blak me-3 fs-4">
+                        <i class="bi bi-facebook"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/company/diners-club-peru/?originalSubdomain=pe" target="_blank" class="text-blak me-3 fs-4">
+                        <i class="bi bi-linkedin"></i>
+                    </a>
+                    <a href="https://www.instagram.com/dinersclubpe/" target="_blank" class="text-blak me-3 fs-4">
+                        <i class="bi bi-instagram"></i>
+                    </a>
                 </div>
                 <div class="col-md-4 mb-3">
                     <h5>Contacto</h5>
                     <ul class="list-unstyled">
                         <li><i class="bi bi-envelope"></i> recursoshumanos@dinnersclub.com</li>
-                        <li><i class="bi bi-telephone"></i> (01) 123-4567</li>
+                        
                     </ul>
                 </div>
             </div>

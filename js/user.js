@@ -241,6 +241,7 @@ async function cargarHistorialSolicitudes(userId) {
             }
 
             row.innerHTML = `
+                <td>${data.createdAt.toDate().toLocaleDateString()}</td>
                 <td>${data.startDate.toDate().toLocaleDateString()}</td>
                 <td>${data.endDate.toDate().toLocaleDateString()}</td>
                 <td>${data.diasHabiles}</td>
