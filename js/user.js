@@ -225,7 +225,7 @@ async function cargarHistorialSolicitudes(userId) {
         solicitudes.forEach(data => {
             const row = document.createElement('tr');
             
-            let statusClass;
+            let statusClass=data.status.trim().toLowerCase();
             switch (data.status.toLowerCase()) {
                 case 'aprobado':
                     statusClass = 'text-success fs-6';
