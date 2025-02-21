@@ -49,10 +49,9 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
     const nombre = document.getElementById('nombre').value;
     const apellidos = document.getElementById('apellidos').value;
     const role = document.getElementById('role').value;
-    const codigo = document.getElementById('codigo').value;
 
     // Validaciones básicas
-    if (!nombre || !apellidos || !codigo || !email || !password || role === 'Seleccionar') {
+    if (!nombre || !apellidos || !email || !password || role === 'Seleccionar') {
         alert("Por favor, completa todos los campos");
         return;
     }
@@ -72,7 +71,6 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
             apellidos: apellidos,
             role: role,
             diasDisponibles: 20,
-            codigo: codigo,
             fechaRegistro: new Date().toISOString(),
             estado: 'activo'
         };
@@ -118,7 +116,6 @@ function checkUserRole(uid) {
                     nombre: userData.nombre,
                     apellidos: userData.apellidos,
                     role: userData.role,
-                    codigo: userData.codigo,
                     email: userData.email
                 }));
                 

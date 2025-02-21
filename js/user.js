@@ -228,7 +228,7 @@ async function cargarHistorialSolicitudes(userId) {
             let statusClass;
             switch (data.status.toLowerCase()) {
                 case 'aprobado':
-                    statusClass = 'text-success';
+                    statusClass = 'text-success fs-6';
                     break;
                 case 'pendiente':
                     statusClass = 'text-warning';
