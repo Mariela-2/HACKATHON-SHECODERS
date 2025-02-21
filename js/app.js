@@ -70,8 +70,8 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
             email: email,
             nombre: nombre,
             apellidos: apellidos,
-            diasDisponibles: 20,
             role: role,
+            diasDisponibles: 20,
             codigo: codigo,
             fechaRegistro: new Date().toISOString(),
             estado: 'activo'
