@@ -131,7 +131,7 @@ document.addEventListener("click", async (event) => {
     if (event.target.classList.contains("enviar-btn")) {
         const id = event.target.dataset.id;
         const fila = document.querySelector(`tr[data-id="${id}"]`);
-        const nuevoEstado = fila.querySelector(".estatus-select").value;
+        let nuevoEstado = fila.querySelector(".estatus-select").value.toUpperCase(); // Convertir a mayúsculas
 
         try {
             // Obtener la solicitud de Firestore
@@ -145,7 +145,7 @@ document.addEventListener("click", async (event) => {
 
             const solicitudData = solicitudSnap.data();
             const userId = solicitudData.userId;
-            const diasHabiles = solicitudData.diasHabiles;
+            const diasHabiles = solicitudData.diasHabiles ?? 0; // Evitar undefined
 
             // Actualizar el estado de la solicitud
             await updateDoc(solicitudRef, { 
@@ -154,7 +154,7 @@ document.addEventListener("click", async (event) => {
             });
 
             // Si la solicitud es aprobada, restar días disponibles del usuario
-            if (nuevoEstado === "aprobado") {
+            if (nuevoEstado === "APROBADO") {
                 const userRef = doc(db, "users", userId);
                 const userSnap = await getDoc(userRef);
 
@@ -166,7 +166,7 @@ document.addEventListener("click", async (event) => {
                     // Actualizar los días disponibles del usuario
                     await updateDoc(userRef, { diasDisponibles: nuevosDiasDisponibles });
 
-                    alert(`Estado actualizado a "Aprobado". Ahora el usuario tiene ${nuevosDiasDisponibles} días disponibles.`);
+                    alert(`Estado actualizado a "APROBADO". Ahora el usuario tiene ${nuevosDiasDisponibles} días disponibles.`);
                 } else {
                     alert("No se encontró el usuario en la base de datos.");
                 }
